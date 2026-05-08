@@ -121,15 +121,12 @@ function drawFrame(floatIdx) {
   const iw = img1.naturalWidth;
   const ih = img1.naturalHeight;
 
-  ctx.clearRect(0, 0, cw, ch);
-
   // ── Layer 1: solid background to hide letterbox bars ──
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, cw, ch);
 
-  // Ensure high-quality rendering
+  // Set default rendering
   ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
 
   // ── Layer 2: crisp contain (full image, centred on top) ──
   const containScale = Math.min(cw / iw, ch / ih);
@@ -143,7 +140,9 @@ function drawFrame(floatIdx) {
   ctx.drawImage(img1, fx, fy, fw, fh);
 
   // Blend the next frame on top to create perfect optical smoothness
-  if (blend > 0.001 && img2 && img2.complete && img2.naturalWidth > 0) {
+  // Fast performance on mobile: avoid heavy blending operation for smaller screens
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile && blend > 0.05 && img2 && img2.complete && img2.naturalWidth > 0) {
     ctx.globalAlpha = blend;
     ctx.drawImage(img2, fx, fy, fw, fh);
   }
@@ -164,7 +163,10 @@ function renderLoop(time) {
   const targetFloat = scrollFraction * (CONFIG.totalFrames - 1);
   
   // Smooth lerp optimized for high refresh rates (like 144hz)
-  currentFrameFloat += (targetFloat - currentFrameFloat) * 0.07; 
+  // Adjusted factor to balance speed and smooth visually
+  // Make it snap faster on mobile devices since touch OS scrolling already has momentum
+  const lerpFactor = window.innerWidth <= 768 ? 0.25 : 0.12;
+  currentFrameFloat += (targetFloat - currentFrameFloat) * lerpFactor; 
 
   // Only draw if there's an actual optical difference to save GPU cycles
   if (Math.abs(targetFloat - currentFrameFloat) > 0.001) {
