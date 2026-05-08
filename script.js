@@ -94,8 +94,9 @@ function frameSrc(index) {
 
 /** Resize canvas to match viewport exactly */
 function resizeCanvas() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
   drawFrame(currentFrameFloat);  // redraw using exact blended frame after resize
 }
 
