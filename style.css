@@ -76,6 +76,28 @@ body {
   overflow: visible;
 }
 
+/* ═══════════════════════════════════════════
+   CENTER SWIPE HINT
+═══════════════════════════════════════════ */
+#center-swipe-hint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 150;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 2rem;
+  color: var(--text, #fff);
+  text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+#center-swipe-hint.hidden {
+  opacity: 0;
+}
+
 #playback-bar {
   height: 100%;
   width: 0%;

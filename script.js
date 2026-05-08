@@ -50,6 +50,7 @@ const loaderPct       = document.getElementById('loader-percentage');
 const playbackBar     = document.getElementById('playback-bar');
 const playbackGlow    = document.getElementById('playback-bar-glow');
 const scrollHint      = document.getElementById('scroll-hint');
+const centerSwipeHint = document.getElementById('center-swipe-hint');
 const sceneOverlayEl  = document.getElementById('scene-overlay');
 const sceneTextEl     = document.getElementById('scene-text');
 const sceneChapterEl  = document.getElementById('scene-chapter');
@@ -196,6 +197,7 @@ function onScroll() {
   if (!hasScrolled && window.scrollY > 10) {
     hasScrolled = true;
     scrollHint.classList.add('hidden');
+    if (centerSwipeHint) centerSwipeHint.classList.add('hidden');
     if (hudEl) hudEl.classList.add('visible');
   }
 
@@ -427,8 +429,18 @@ function init() {
   // Scroll listener (throttled by rAF — state is read in loop)
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  // Keyboard scrubbing
+  // Keyboard Scrubbing
   window.addEventListener('keydown', onKeyDown);
+
+  // Global listeners to dismiss center hint
+  function dismissHints() {
+    if (centerSwipeHint) centerSwipeHint.classList.add('hidden');
+    if (scrollHint) scrollHint.classList.add('hidden');
+  }
+  window.addEventListener('keydown', dismissHints, { once: true });
+  window.addEventListener('touchstart', dismissHints, { once: true });
+  window.addEventListener('mousedown', dismissHints, { once: true });
+  window.addEventListener('wheel', dismissHints, { once: true });
 
   // Start render loop
   renderLoop();
