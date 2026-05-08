@@ -53,9 +53,9 @@ const scrollHint      = document.getElementById('scroll-hint');
 const sceneOverlayEl  = document.getElementById('scene-overlay');
 const sceneTextEl     = document.getElementById('scene-text');
 const sceneChapterEl  = document.getElementById('scene-chapter');
-const hudEl           = document.getElementById('hud');
-const hudFrame        = document.getElementById('hud-frame');
-const hudScroll       = document.getElementById('hud-scroll');
+const hudEl           = document.getElementById('hud'); // null now
+const hudFrame        = document.getElementById('hud-frame'); // null now
+const hudScroll       = document.getElementById('hud-scroll'); // null now
 const scrollContainer = document.getElementById('scroll-container');
 
 /* ──────────────────────────────────────────
@@ -191,19 +191,19 @@ function onScroll() {
   if (!hasScrolled && window.scrollY > 10) {
     hasScrolled = true;
     scrollHint.classList.add('hidden');
-    hudEl.classList.add('visible');
+    if (hudEl) hudEl.classList.add('visible');
   }
 
   // Hide HUD + scene overlay inside portfolio, restore in animation zone
   if (inPortfolio) {
-    hudEl.classList.remove('visible');
+    if (hudEl) hudEl.classList.remove('visible');
     sceneOverlayEl.classList.add('hidden');   // hide the whole box
     sceneTextEl.classList.remove('visible');
     sceneChapterEl.classList.remove('visible');
     lastSceneIdx = -2; // Force update when scrolling back up
     sceneVisible = false;
   } else if (hasScrolled) {
-    hudEl.classList.add('visible');
+    if (hudEl) hudEl.classList.add('visible');
   }
 
   // Update top progress bar (only during animation)
@@ -279,8 +279,8 @@ function updateSceneOverlay(frac) {
 ────────────────────────────────────────────*/
 
 function updateHUD() {
-  hudFrame.textContent  = pad(currentFrameIdx + 1, 3);
-  hudScroll.textContent = Math.round(scrollFraction * 100) + '%';
+  if (hudFrame) hudFrame.textContent  = pad(currentFrameIdx + 1, 3);
+  if (hudScroll) hudScroll.textContent = Math.round(scrollFraction * 100) + '%';
 }
 
 /* ──────────────────────────────────────────
