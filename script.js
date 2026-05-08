@@ -126,6 +126,10 @@ function drawFrame(floatIdx) {
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, cw, ch);
 
+  // Ensure high-quality rendering
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
   // ── Layer 2: crisp contain (full image, centred on top) ──
   const containScale = Math.min(cw / iw, ch / ih);
   const fw = iw * containScale;
