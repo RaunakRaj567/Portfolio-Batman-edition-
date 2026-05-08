@@ -30,7 +30,7 @@ const CONFIG = {
    zone: fraction of scroll during which text is visible
 ────────────────────────────────────────────*/
 const SCENES = [
-  { at: 0.00, chapter: 'Hello, World 👋', text: 'Raunak Raj— Aspiring Data Science & ML Engineer', zone: 0.14 },
+  { at: 0.00, chapter: 'Hello, World 👋', text: 'Raunak Raj— Aspiring Data Scientist & ML Engineer', zone: 0.14 },
   { at: 0.20, chapter: 'The Mission',     text: 'Building software that thinks.', zone: 0.28 },
   { at: 0.55, chapter: 'The Work',        text: 'ML · Deep Learning · Full-Stack', zone: 0.12 },
   { at: 0.82, chapter: 'The Record',      text: '5× Hackathon Finalist',          zone: 0.18 },
