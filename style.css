@@ -101,14 +101,11 @@ body {
 
 #playback-bar {
   height: 100%;
-  width: 100%;
-  transform-origin: left center;
-  transform: scaleX(0);
+  width: 0%;
   background: linear-gradient(90deg, var(--accent-dim), var(--accent));
-  transition: transform 0.05s linear;
+  transition: width 0.05s linear;
   position: relative;
   z-index: 2;
-  will-change: transform;
 }
 
 #playback-bar-glow {
@@ -116,15 +113,12 @@ body {
   top: -4px;
   left: 0;
   height: 11px;
-  width: 100%;
-  transform-origin: left center;
-  transform: scaleX(0);
+  width: 0%;
   background: var(--accent-glow);
   filter: blur(6px);
-  transition: transform 0.05s linear;
+  transition: width 0.05s linear;
   z-index: 1;
   pointer-events: none;
-  will-change: transform;
 }
 
 
