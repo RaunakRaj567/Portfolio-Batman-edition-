@@ -40,7 +40,8 @@ const SCENES = [
    DOM REFS
 ────────────────────────────────────────────*/
 const canvas          = document.getElementById('frame-canvas');
-const ctx             = canvas.getContext('2d', { alpha: false });
+// Ensure desynchronized/low latency context for better performance
+const ctx             = canvas.getContext('2d', { alpha: false, desynchronized: true });
 const loadingScreen   = document.getElementById('loading-screen');
 const loadingBar      = document.getElementById('loading-bar');
 const progressGlow    = document.getElementById('progress-glow');
@@ -95,7 +96,12 @@ function frameSrc(index) {
 
 /** Resize canvas to match viewport exactly */
 function resizeCanvas() {
-  const dpr = window.devicePixelRatio || 1;
+  const isMobile = window.innerWidth <= 768;
+  // Cap devicePixelRatio on mobile to 1 to drastically save rendering pixels 
+  // (mobile screens have high dpr, drawing massive canvases tanks performance)
+  const baseDpr = window.devicePixelRatio || 1;
+  const dpr = isMobile ? Math.min(baseDpr, 1) : baseDpr;
+  
   canvas.width  = window.innerWidth * dpr;
   canvas.height = window.innerHeight * dpr;
   drawFrame(currentFrameFloat);  // redraw using exact blended frame after resize
