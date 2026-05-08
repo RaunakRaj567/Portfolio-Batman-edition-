@@ -383,11 +383,11 @@ async function preloadAllFrames() {
   totalCountEl.textContent = CONFIG.totalFrames;
   updateLoadingUI(0, CONFIG.totalFrames);
 
-  // Load the first 10 frames aggressively to unblock the UI quickly
-  const initialCount = Math.min(10, CONFIG.totalFrames);
+  // Load JUST the first 2 frames to unblock the UI instantly
+  const initialCount = Math.min(2, CONFIG.totalFrames);
   await loadBatch(0, initialCount);
 
-  // Hide loader, reveal experience early so the user doesn't wait too long
+  // Hide loader, reveal experience early so the user doesn't wait
   allLoaded = true;
   loadingScreen.classList.add('hidden');
   
@@ -397,12 +397,12 @@ async function preloadAllFrames() {
   // Trigger initial scene text
   updateSceneOverlay(0);
 
-  // Load remaining frames in the background concurrently for a much faster total loading time
-  const promises = [];
+  // Load remaining frames in the background sequentially.
+  // Using await here ensures frames 3, 4, 5 load before end frames like 70.
+  // Firing all requests at once blocks the network queue, slowing down early scrolling.
   for (let start = initialCount; start < CONFIG.totalFrames; start += CONFIG.batchSize) {
-    promises.push(loadBatch(start, CONFIG.batchSize));
+    await loadBatch(start, CONFIG.batchSize);
   }
-  await Promise.all(promises);
 }
 
 /* ──────────────────────────────────────────
