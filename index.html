@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Raunak Raj — AI & ML Engineer. B.Tech CSE (Data Science & ML). Portfolio showcasing projects in Machine Learning, Deep Learning, and Full-Stack Development." />
+  <title>Raunak Raj | Data Science & ML Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@200;300;400;600;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+       LOADING SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">RAUNAK RAJ</span>
+      </div>
+      <p class="loader-subtitle">Loading cinematic experience…</p>
+      <div class="progress-track">
+        <div id="loading-bar" class="progress-fill"></div>
+        <div class="progress-glow" id="progress-glow"></div>
+      </div>
+      <div class="loader-stats">
+        <span id="loaded-count">0</span>
+        <span class="stat-sep">/</span>
+        <span id="total-count">74</span>
+        <span class="stat-label">frames</span>
+      </div>
+      <div class="loader-percentage" id="loader-percentage">0%</div>
+    </div>
+    <div class="loader-bg-rings">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TOP PLAYBACK PROGRESS BAR
+  ══════════════════════════════════════════ -->
+  <div id="progress-bar-container">
+    <div id="playback-bar"></div>
+    <div id="playback-bar-glow"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FIXED CANVAS (animation backdrop)
+  ══════════════════════════════════════════ -->
+  <canvas id="frame-canvas"></canvas>
+
+  <!-- ══════════════════════════════════════════
+       SCROLL HINT
+  ══════════════════════════════════════════ -->
+  <div id="scroll-hint">
+    <span class="hint-text">Scroll to explore</span>
+    <div class="hint-arrow">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCENE TEXT OVERLAYS (during animation)
+  ══════════════════════════════════════════ -->
+  <div id="scene-overlay">
+    <div class="scene-chapter" id="scene-chapter"></div>
+    <div class="scene-text" id="scene-text"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       HUD
+  ══════════════════════════════════════════ -->
+  <div id="hud">
+    <div class="hud-item">
+      <span class="hud-label">FRAME</span>
+      <span class="hud-value" id="hud-frame">001</span>
+    </div>
+    <div class="hud-divider"></div>
+    <div class="hud-item">
+      <span class="hud-label">SCROLL</span>
+      <span class="hud-value" id="hud-scroll">0%</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       ANIMATION SCROLL ZONE (700vh)
+  ══════════════════════════════════════════ -->
+  <div id="scroll-container"></div>
+
+  <!-- ══════════════════════════════════════════
+       PORTFOLIO SECTIONS (appear after animation)
+  ══════════════════════════════════════════ -->
+  <div id="portfolio">
+
+    <!-- ── HERO ───────────────────────────── -->
+    <section id="section-hero" class="port-section hero-section">
+      <div class="hero-badge">👨‍💻 Open to Opportunities</div>
+      <h1 class="hero-name">Raunak Raj</h1>
+      <p class="hero-tagline">Data Science &amp; Machine Learning Engineer</p>
+      <p class="hero-sub">B.Tech CSE · Data Science &amp; ML · Building software solutions that think</p>
+      <div class="hero-chips">
+        <span class="chip">🤖 Machine Learning</span>
+        <span class="chip">🧠 Deep Learning</span>
+        <span class="chip">📊 Data Science</span>
+        <span class="chip">🌐 Full-Stack</span>
+      </div>
+      <div class="hero-socials">
+        <a href="mailto:raj56raunak@gmail.com" class="social-btn" id="btn-email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m2 7 10 7 10-7" />
+          </svg>
+          Email
+        </a>
+        <a href="https://www.linkedin.com/in/raunak-raj-669232384/" target="_blank" rel="noopener" class="social-btn"
+          id="btn-linkedin">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+            <rect x="2" y="9" width="4" height="12" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/RaunakRaj567" target="_blank" rel="noopener" class="social-btn" id="btn-github">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          GitHub
+        </a>
+        <a href="https://www.instagram.com/raunak_mishra.00/" target="_blank" rel="noopener" class="social-btn"
+          id="btn-instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+          </svg>
+          Instagram
+        </a>
+      </div>
+      <p class="hero-quote">"Built with curiosity &amp; code"</p>
+    </section>
+
+    <!-- ── SKILLS ──────────────────────────── -->
+    <section id="section-skills" class="port-section">
+      <div class="section-inner">
+        <div class="section-label">What I Work With</div>
+        <h2 class="section-title">Skills &amp; Technologies</h2>
+
+        <div class="skills-grid">
+          <div class="skill-card">
+            <div class="skill-icon">🤖</div>
+            <div class="skill-name">Machine Learning &amp; AI</div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🐍</div>
+            <div class="skill-name">Python Development</div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">📊</div>
+            <div class="skill-name">Data Science &amp; Analytics</div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">⚡</div>
+            <div class="skill-name">Automation &amp; Scripting</div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🧠</div>
+            <div class="skill-name">Deep Learning</div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🌐</div>
+            <div class="skill-name">Web Development</div>
+          </div>
+        </div>
+
+        <div class="tech-stack">
+          <div class="tech-group">
+            <div class="tech-group-label">Languages &amp; Libraries</div>
+            <div class="tech-tags">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Pandas</span>
+              <span class="tech-tag">NumPy</span>
+              <span class="tech-tag">Matplotlib</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">ML / AI Frameworks</div>
+            <div class="tech-tags">
+              <span class="tech-tag accent">PyTorch</span>
+              <span class="tech-tag accent">TensorFlow</span>
+              <span class="tech-tag accent">Scikit-learn</span>
+              <span class="tech-tag accent">Hugging Face</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Backend &amp; Web</div>
+            <div class="tech-tags">
+              <span class="tech-tag">Flask</span>
+              <span class="tech-tag">Django</span>
+              <span class="tech-tag">FastAPI</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Databases &amp; Tools</div>
+            <div class="tech-tags">
+              <span class="tech-tag">MongoDB</span>
+              <span class="tech-tag">Git &amp; GitHub</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">Jupyter</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROJECTS ────────────────────────── -->
+    <section id="section-projects" class="port-section">
+      <div class="section-inner">
+        <div class="section-label">What I've Built</div>
+        <h2 class="section-title">Featured Projects</h2>
+
+        <div class="projects-grid">
+
+          <div class="project-card" id="proj-1">
+            <div class="project-num">01</div>
+            <div class="project-icon">📚</div>
+            <h3 class="project-title">Adaptive Learning Platform</h3>
+            <p class="project-desc">An AI-powered EdTech application that uses NLP to dynamically adjust quiz
+              difficulty, content, and resources according to individual learner comprehension.</p>
+            <div class="project-tags">
+              <span class="proj-tag">Python</span>
+              <span class="proj-tag">NLP</span>
+              <span class="proj-tag">EdTech</span>
+            </div>
+            <a href="https://github.com/Naiitikk/Ai-SmartEducation-System" target="_blank" rel="noopener"
+              class="project-link">
+              View Source →
+            </a>
+          </div>
+
+          <div class="project-card" id="proj-2">
+            <div class="project-num">02</div>
+            <div class="project-icon">📈</div>
+            <h3 class="project-title">ML-Powered RTB Bidding Platform</h3>
+            <p class="project-desc">A Real-Time Bidding DSP trained on historical ad impression data, using ML models to
+              predict CTR and dynamically compute optimal bids.</p>
+            <div class="project-tags">
+              <span class="proj-tag">Machine Learning</span>
+              <span class="proj-tag">Real-Time</span>
+              <span class="proj-tag">DSP</span>
+            </div>
+            <a href="https://github.com/RaunakRaj567/Real-Time-Bidding-DSP-Optimization-System" target="_blank"
+              rel="noopener" class="project-link">
+              View Source →
+            </a>
+          </div>
+
+          <div class="project-card" id="proj-3">
+            <div class="project-num">03</div>
+            <div class="project-icon">⚙️</div>
+            <h3 class="project-title">Automatic Prompt Generator</h3>
+            <p class="project-desc">An automation tool that intelligently generates optimized, template-driven prompts
+              for LLMs, minimizing manual prompt engineering effort.</p>
+            <div class="project-tags">
+              <span class="proj-tag">Automation</span>
+              <span class="proj-tag">LLM</span>
+              <span class="proj-tag">Prompt Engineering</span>
+            </div>
+            <a href="https://github.com/RaunakRaj567/AI-Prompt-Generation-Automated-" target="_blank" rel="noopener"
+              class="project-link">
+              View Source →
+            </a>
+          </div>
+
+          <div class="project-card in-dev" id="proj-4">
+            <div class="project-num">04</div>
+            <div class="project-icon">🔬</div>
+            <div class="dev-badge">In Development</div>
+            <h3 class="project-title">Skin Disease Detector</h3>
+            <p class="project-desc">A computer vision Flask app that evaluates skin conditions from uploaded images,
+              leveraging a fine-tuned Hugging Face DINOv2 model for real-time diagnostics.</p>
+            <div class="project-tags">
+              <span class="proj-tag">Deep Learning</span>
+              <span class="proj-tag">DINOv2</span>
+              <span class="proj-tag">Flask</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ACHIEVEMENTS ────────────────────── -->
+    <section id="section-achievements" class="port-section">
+      <div class="section-inner">
+        <div class="section-label">Track Record</div>
+        <h2 class="section-title">Key Achievements</h2>
+
+        <div class="achievements-list">
+          <div class="achieve-item" id="ach-1">
+            <div class="achieve-icon">🏆</div>
+            <div class="achieve-body">
+              <div class="achieve-title">Hackathon Finalist <span class="achieve-badge">5×</span></div>
+              <div class="achieve-desc">Reached the finals across 5 competitive national and collegiate hackathons.
+              </div>
+            </div>
+          </div>
+          <div class="achieve-item" id="ach-2">
+            <div class="achieve-icon">⚡</div>
+            <div class="achieve-body">
+              <div class="achieve-title">ML-Powered Bidding Engine</div>
+              <div class="achieve-desc">Single-handedly engineered a production-grade RTB DSP with a full analytics
+                dashboard.</div>
+            </div>
+          </div>
+          <div class="achieve-item" id="ach-3">
+            <div class="achieve-icon">🔐</div>
+            <div class="achieve-body">
+              <div class="achieve-title">Health App Backend</div>
+              <div class="achieve-desc">Designed a secure MongoDB + FastAPI backend with role-based access control and
+                S3 document management.</div>
+            </div>
+          </div>
+          <div class="achieve-item" id="ach-4">
+            <div class="achieve-icon">🧩</div>
+            <div class="achieve-body">
+              <div class="achieve-title">Prompt Automation</div>
+              <div class="achieve-desc">Reduced engineering efforts by rolling out an intelligent prompt generation
+                workflow.</div>
+            </div>
+          </div>
+          <div class="achieve-item" id="ach-5">
+            <div class="achieve-icon">👁️</div>
+            <div class="achieve-body">
+              <div class="achieve-title">Computer Vision Deployment</div>
+              <div class="achieve-desc">Fine-tuned state-of-the-art visual transformers (DINOv2) for healthcare
+                diagnostics.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ─────────────────────────── -->
+    <section id="section-contact" class="port-section contact-section">
+      <div class="section-inner contact-inner">
+        <div class="section-label">Get In Touch</div>
+        <h2 class="section-title">Let's Connect</h2>
+        <p class="contact-sub">I'm actively looking to strengthen my professional network and explore opportunities in
+          AI, Data Science, and Software Engineering. Open to collaborations or research projects!</p>
+
+        <div class="contact-grid">
+          <a href="mailto:raj56raunak@gmail.com" class="contact-card" id="cc-email">
+            <div class="cc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 7 10-7" />
+              </svg>
+            </div>
+            <div class="cc-label">Email</div>
+            <div class="cc-value">raj56raunak@gmail.com</div>
+          </a>
+          <a href="https://www.linkedin.com/in/raunak-raj-669232384/" target="_blank" rel="noopener"
+            class="contact-card" id="cc-linkedin">
+            <div class="cc-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+            </div>
+            <div class="cc-label">LinkedIn</div>
+            <div class="cc-value">/in/raunak-raj-669232384</div>
+          </a>
+          <a href="https://github.com/RaunakRaj567" target="_blank" rel="noopener" class="contact-card" id="cc-github">
+            <div class="cc-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+            </div>
+            <div class="cc-label">GitHub</div>
+            <div class="cc-value">@RaunakRaj567</div>
+          </a>
+          <a href="https://www.instagram.com/raunak_mishra.00/" target="_blank" rel="noopener" class="contact-card"
+            id="cc-instagram">
+            <div class="cc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </div>
+            <div class="cc-label">Instagram</div>
+            <div class="cc-value">@raunak_mishra.00</div>
+          </a>
+        </div>
+
+        <div class="footer-quote">"Built with curiosity &amp; code" — Raunak Raj</div>
+      </div>
+    </section>
+
+  </div><!-- /#portfolio -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>
