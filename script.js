@@ -222,10 +222,10 @@ function onScroll() {
   }
 
   // Update top progress bar (only during animation)
+  // Use transform scaleX rather than width to prevent layout thrashing on scroll
   const animFrac = inPortfolio ? 1 : scrollFraction;
-  const pct = (animFrac * 100).toFixed(2) + '%';
-  playbackBar.style.width  = pct;
-  playbackGlow.style.width = pct;
+  playbackBar.style.transform  = `scaleX(${animFrac})`;
+  playbackGlow.style.transform = `scaleX(${animFrac})`;
 
   // Scene overlay logic (only during animation)
   if (!inPortfolio) updateSceneOverlay(scrollFraction);
