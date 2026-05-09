@@ -13,7 +13,7 @@
   --accent-glow:   hsla(45, 100%, 60%, 0.35);
   --white:         #ffffff;
   --off-white:     hsl(0, 0%, 88%);
-  --muted:         hsl(0, 0%, 50%);
+  --muted:         hsl(0, 0%, 75%);
   --bg:            #000000;
   --surface:       hsl(0, 0%, 7%);
   --border:        hsla(0, 0%, 100%, 0.08);
@@ -47,6 +47,8 @@ body {
 }
 
 
+
+
 /* ═══════════════════════════════════════════
    FIXED CANVAS
 ═══════════════════════════════════════════ */
@@ -59,67 +61,11 @@ body {
   display: block;
   z-index: 0;
   background: #000;
+  transition: opacity 1.5s ease-out;
 }
 
 
-/* ═══════════════════════════════════════════
-   TOP PLAYBACK PROGRESS BAR
-═══════════════════════════════════════════ */
-#progress-bar-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: hsla(0, 0%, 100%, 0.07);
-  z-index: 100;
-  overflow: visible;
-}
 
-/* ═══════════════════════════════════════════
-   CENTER SWIPE HINT
-═══════════════════════════════════════════ */
-#center-swipe-hint {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 150;
-  font-family: var(--font-display, 'Outfit', sans-serif);
-  font-size: 2rem;
-  color: var(--text, #fff);
-  text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.5s ease-out;
-}
-
-#center-swipe-hint.hidden {
-  opacity: 0;
-}
-
-#playback-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
-  transition: width 0.05s linear;
-  position: relative;
-  z-index: 2;
-}
-
-#playback-bar-glow {
-  position: absolute;
-  top: -4px;
-  left: 0;
-  height: 11px;
-  width: 0%;
-  background: var(--accent-glow);
-  filter: blur(6px);
-  transition: width 0.05s linear;
-  z-index: 1;
-  pointer-events: none;
-}
 
 
 /* ═══════════════════════════════════════════
@@ -129,7 +75,7 @@ body {
   position: fixed;
   bottom: 32px;
   right: 32px;
-  display: flex;
+  display: none !important;
   align-items: center;
   gap: 16px;
   background: hsla(0, 0%, 0%, 0.55);
@@ -138,7 +84,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px 18px;
-  z-index: 50;
+  z-index: 150;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
@@ -181,64 +127,7 @@ body {
 }
 
 
-/* ═══════════════════════════════════════════
-   SCROLL HINT
-═══════════════════════════════════════════ */
-#scroll-hint {
-  position: fixed;
-  bottom: 36px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  z-index: 50;
-  opacity: 1;
-  transition: opacity 0.8s var(--ease-out-expo);
-  pointer-events: none;
-}
 
-#scroll-hint.hidden {
-  opacity: 0;
-}
-
-.hint-text {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 300;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--off-white);
-  text-shadow: 0 0 20px rgba(0,0,0,0.8);
-}
-
-.hint-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  animation: bounce 1.8s ease-in-out infinite;
-}
-
-.arrow-shaft {
-  width: 1px;
-  height: 22px;
-  background: linear-gradient(to bottom, transparent, var(--accent));
-}
-
-.arrow-head {
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid var(--accent);
-  border-bottom: 1.5px solid var(--accent);
-  transform: rotate(45deg) translateY(-3px);
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(8px); }
-}
 
 
 /* ═══════════════════════════════════════════
@@ -532,14 +421,72 @@ body {
 #portfolio {
   position: relative;
   z-index: 10;
+  background: hsla(0, 0%, 0%, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: none;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1.2s var(--ease-out-expo), transform 1.2s var(--ease-out-expo);
+  width: 70%;
+  margin: 0 auto;
+  border-radius: 24px 24px 0 0;
+}
+
+#portfolio.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════
+   VIEW PORTFOLIO OVERLAY
+═══════════════════════════════════════════ */
+#view-portfolio {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
   background: transparent;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo), visibility 0.6s;
+}
+
+#view-portfolio.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#view-portfolio-btn {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: hsla(0, 0%, 0%, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid hsla(45, 100%, 60%, 0.15);
+  border-radius: 12px;
+  padding: 16px 36px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s var(--ease-out-expo), background 0.3s, border-color 0.3s;
+  pointer-events: auto;
+}
+
+#view-portfolio-btn:hover {
+  transform: translateY(-2px);
+  background: hsla(0, 0%, 0%, 0.3);
+  border-color: hsla(45, 100%, 60%, 0.35);
 }
 
 /* ── Shared section base ── */
 .port-section {
   position: relative;
   padding: 120px 24px;
-  border-top: 1px solid var(--border);
 }
 
 .section-inner {
@@ -577,7 +524,7 @@ body {
   justify-content: center;
   text-align: center;
   padding: 80px 24px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, hsla(0,0%,4%,0.85) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, hsla(0,0%,4%,0.4) 100%);
 }
 
 .hero-badge {
@@ -686,7 +633,7 @@ body {
   font-family: var(--font-display);
   font-size: 13px;
   font-style: italic;
-  color: hsl(0,0%,35%);
+  color: var(--off-white);
   letter-spacing: 0.06em;
 }
 
@@ -694,7 +641,7 @@ body {
    SKILLS SECTION
 ═══════════════════════════════════════════ */
 #section-skills {
-  background: hsla(0,0%,3%,0.85);
+  background: hsla(0,0%,3%,0.3);
 }
 
 .skills-grid {
@@ -772,7 +719,7 @@ body {
    PROJECTS SECTION
 ═══════════════════════════════════════════ */
 #section-projects {
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.3);
 }
 
 .projects-grid {
@@ -888,28 +835,30 @@ body {
    ACHIEVEMENTS SECTION
 ═══════════════════════════════════════════ */
 #section-achievements {
-  background: hsla(0,0%,3%,0.85);
+  background: hsla(0,0%,3%,0.3);
 }
 
 .achievements-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 16px;
 }
 
 .achieve-item {
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  padding: 24px 28px;
-  border-radius: 14px;
-  border: 1px solid transparent;
-  transition: background 0.25s, border-color 0.25s;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background 0.25s, border-color 0.25s, transform 0.25s;
 }
 
 .achieve-item:hover {
-  background: hsla(45,100%,60%,0.04);
-  border-color: var(--border);
+  background: hsla(45,100%,60%,0.05);
+  border-color: hsla(45,100%,60%,0.35);
+  transform: translateY(-2px);
 }
 
 .achieve-icon {
@@ -950,7 +899,7 @@ body {
    CONTACT SECTION
 ═══════════════════════════════════════════ */
 .contact-section {
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.3);
   padding-bottom: 100px;
 }
 
@@ -1027,7 +976,21 @@ body {
   font-family: var(--font-display);
   font-size: 14px;
   font-style: italic;
-  color: hsl(0,0%,30%);
+  color: var(--off-white);
   letter-spacing: 0.06em;
 }
+
+/* ── Typography Visibility Over Background ── */
+.hero-name, .hero-tagline, .hero-sub, .hero-quote, .footer-quote,
+.section-title, .section-label, .contact-sub {
+  text-shadow: 0 2px 14px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.8);
+}
+
+@media (max-width: 900px) {
+  #portfolio {
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
 

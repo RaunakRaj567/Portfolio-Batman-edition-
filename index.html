@@ -21,11 +21,52 @@
        LOADING SCREEN
   ══════════════════════════════════════════ -->
   <div id="loading-screen">
+    <!-- Loading FX: Bat Signal + falling bats that form logo -->
+    <div id="loading-fx" aria-hidden="true">
+      <div id="bat-signal">
+        <div class="bat-signal-source"></div>
+        <div class="bat-signal-beam"></div>
+        <svg class="bat-signal-mark" viewBox="0 0 260 140" role="img" aria-label="Bat signal">
+          <defs>
+            <radialGradient id="signalGlow" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55" />
+              <stop offset="55%" stop-color="var(--accent)" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="130" cy="70" r="58" fill="url(#signalGlow)" />
+          <!-- simple bat silhouette inside signal (stylized) -->
+          <path
+            d="M130 48
+               c-8 0-14 6-14 14
+               c0 3 1 6 3 8
+               c-10 2-18 9-22 18
+               c8-4 18-5 27-1
+               c2 1 4 2 6 2
+               c2 0 4-1 6-2
+               c9-4 19-3 27 1
+               c-4-9-12-16-22-18
+               c2-2 3-5 3-8
+               c0-8-6-14-14-14z"
+            fill="var(--accent)" fill-opacity="0.28" />
+        </svg>
+      </div>
+
+      <div id="falling-bats" aria-hidden="true"></div>
+    </div>
+
     <div class="loader-content">
       <div class="loader-logo">
         <span class="logo-icon">◈</span>
         <span class="logo-text">RAUNAK RAJ</span>
       </div>
+
+      <div class="loader-media" aria-hidden="true">
+        <video id="loader-video" autoplay muted loop playsinline preload="auto">
+          <source src="videoplayback.mp4" type="video/mp4" />
+        </video>
+      </div>
+
       <p class="loader-subtitle">Loading cinematic experience…</p>
       <div class="progress-track">
         <div id="loading-bar" class="progress-fill"></div>
@@ -34,7 +75,7 @@
       <div class="loader-stats">
         <span id="loaded-count">0</span>
         <span class="stat-sep">/</span>
-        <span id="total-count">74</span>
+        <span id="total-count">70</span>
         <span class="stat-label">frames</span>
       </div>
       <div class="loader-percentage" id="loader-percentage">0%</div>
@@ -46,13 +87,7 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       TOP PLAYBACK PROGRESS BAR
-  ══════════════════════════════════════════ -->
-  <div id="progress-bar-container">
-    <div id="playback-bar"></div>
-    <div id="playback-bar-glow"></div>
-  </div>
+
 
   <!-- ══════════════════════════════════════════
        FIXED CANVAS (animation backdrop)
@@ -60,22 +95,15 @@
   <canvas id="frame-canvas"></canvas>
 
   <!-- ══════════════════════════════════════════
-       CENTER SWIPE HINT
+       ENTER BUTTON (replaces swipe-down hint)
   ══════════════════════════════════════════ -->
-  <div id="center-swipe-hint">
-    <strong>SWIPE DOWN</strong>
+  <div id="view-portfolio" class="hidden" aria-hidden="false">
+    <button id="view-portfolio-btn" type="button">
+      View Portfolio
+    </button>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       SCROLL HINT
-  ══════════════════════════════════════════ -->
-  <div id="scroll-hint">
-    <span class="hint-text">Swipe up fast!</span>
-    <div class="hint-arrow">
-      <div class="arrow-shaft"></div>
-      <div class="arrow-head"></div>
-    </div>
-  </div>
+
 
   <!-- ══════════════════════════════════════════
        SCENE TEXT OVERLAYS (during animation)
@@ -86,17 +114,22 @@
   </div>
 
   <!-- ══════════════════════════════════════════
-       HUD (Removed)
+       HUD (bottom-right)
   ══════════════════════════════════════════ -->
+  <div id="hud" aria-hidden="true">
+    <div class="hud-item">
+      <div class="hud-label">Frame</div>
+      <div class="hud-value" id="hud-frame">002</div>
+    </div>
+  </div>
+
+
 
   <!-- ══════════════════════════════════════════
        ANIMATION SCROLL ZONE (700vh)
   ══════════════════════════════════════════ -->
   <div id="scroll-container"></div>
 
-  <!-- ══════════════════════════════════════════
-       PORTFOLIO SECTIONS (appear after animation)
-  ══════════════════════════════════════════ -->
   <div id="portfolio">
 
     <!-- ── HERO ───────────────────────────── -->
