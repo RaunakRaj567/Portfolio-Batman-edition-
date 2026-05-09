@@ -649,6 +649,28 @@ function init() {
 
   // Begin loading frames
   preloadAllFrames();
+
+  // ── Autoplay audio bypass ──
+  // Browsers block audio autoplay without user gesture.
+  // Play the loader song on the very first interaction on the page.
+  const loaderAudio = document.getElementById('loader-audio');
+  if (loaderAudio) {
+    const unlockAudio = () => {
+      loaderAudio.play().catch(() => {});
+      window.removeEventListener('click',      unlockAudio);
+      window.removeEventListener('keydown',    unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('mousemove',  unlockAudio);
+    };
+    // Try immediately (works if browser allows it)
+    loaderAudio.play().catch(() => {
+      // Blocked — wait for first interaction
+      window.addEventListener('click',      unlockAudio, { once: true });
+      window.addEventListener('keydown',    unlockAudio, { once: true });
+      window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+      window.addEventListener('mousemove',  unlockAudio, { once: true });
+    });
+  }
 }
 
 // Wait for DOM then init
