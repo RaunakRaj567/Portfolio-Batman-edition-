@@ -288,6 +288,26 @@ body {
   color: var(--white);
 }
 
+#loading-fx {
+  display: none !important;
+}
+
+.loader-media {
+  width: 240px;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+#loader-video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .loader-subtitle {
   font-family: var(--font-body);
   font-size: 13px;

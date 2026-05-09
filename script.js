@@ -588,10 +588,15 @@ async function preloadAllFrames() {
   loadingScreen.classList.add('hidden');
   if (viewPortfolioOverlay) viewPortfolioOverlay.classList.remove('hidden');
 
-  // Stop the loader video once it's not visible.
+  // Stop the loader video and audio once they are not visible.
   if (loaderVideo) {
     loaderVideo.pause();
     loaderVideo.currentTime = 0;
+  }
+  const loaderAudio = document.getElementById('loader-audio');
+  if (loaderAudio) {
+    loaderAudio.pause();
+    loaderAudio.currentTime = 0;
   }
 
   // Draw the first frame and initial overlay text.
