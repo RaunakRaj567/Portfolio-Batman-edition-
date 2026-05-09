@@ -68,6 +68,8 @@ const portfolioEl     = document.getElementById('portfolio');
 const loadingFx       = document.getElementById('loading-fx');
 const fallingBatsEl   = document.getElementById('falling-bats');
 const loaderVideo     = document.getElementById('loader-video');
+const loaderAudio     = document.getElementById('loader-audio');
+const musicToggle     = document.getElementById('music-toggle');
 
 /* ──────────────────────────────────────────
    STATE
@@ -593,7 +595,6 @@ async function preloadAllFrames() {
     loaderVideo.pause();
     loaderVideo.currentTime = 0;
   }
-  const loaderAudio = document.getElementById('loader-audio');
   if (loaderAudio) {
     loaderAudio.pause();
     loaderAudio.currentTime = 0;
@@ -650,25 +651,24 @@ function init() {
   // Begin loading frames
   preloadAllFrames();
 
-  // ── Autoplay audio bypass ──
-  // Browsers block audio autoplay without user gesture.
-  // Play the loader song on the very first interaction on the page.
-  const loaderAudio = document.getElementById('loader-audio');
-  if (loaderAudio) {
-    const unlockAudio = () => {
-      loaderAudio.play().catch(() => {});
-      window.removeEventListener('click',      unlockAudio);
-      window.removeEventListener('keydown',    unlockAudio);
-      window.removeEventListener('touchstart', unlockAudio);
-      window.removeEventListener('mousemove',  unlockAudio);
-    };
-    // Try immediately (works if browser allows it)
-    loaderAudio.play().catch(() => {
-      // Blocked — wait for first interaction
-      window.addEventListener('click',      unlockAudio, { once: true });
-      window.addEventListener('keydown',    unlockAudio, { once: true });
-      window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
-      window.addEventListener('mousemove',  unlockAudio, { once: true });
+  // ── Music Toggle Logic ──
+  if (musicToggle && loaderAudio) {
+    musicToggle.addEventListener('click', () => {
+      const isPaused = loaderAudio.paused;
+      const icon = musicToggle.querySelector('.music-icon');
+      const text = musicToggle.querySelector('.music-text');
+      
+      if (isPaused) {
+        loaderAudio.play().catch(err => console.warn("Audio play failed:", err));
+        musicToggle.classList.add('active');
+        if (icon) icon.textContent = '🔊';
+        if (text) text.textContent = 'Music On';
+      } else {
+        loaderAudio.pause();
+        musicToggle.classList.remove('active');
+        if (icon) icon.textContent = '🔇';
+        if (text) text.textContent = 'Play Music';
+      }
     });
   }
 }
