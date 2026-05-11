@@ -10,19 +10,23 @@
 ────────────────────────────────────────────*/
 const CONFIG = {
   totalFrames:   69,            // total number of real unique frames (002–070)
-  framePath:     './',          // folder containing frames (trailing slash)
-  framePrefix:   '',            // prefix before the number, e.g. "frame_"
-  frameSuffix:   '.png',        // file extension
-  framePadding:  3,             // zero-padding digits (001 → 3)
-  batchSize:     20,            // frames loaded in parallel per batch
-  scrollHeight:  '700vh',       // height of scroll container
+  priorityFrames: 8,            // minimal frames to allow "Enter"
+  maxMemoryFrames: 30,          // limit frames in RAM for iOS stability
+  framePath:     './',          // folder containing frames
+  framePrefix:   '',            
+  frameSuffix:   '.png',        
+  framePadding:  3,             
+  batchSize:     4,             // small batches for mobile network stability
+  scrollHeight:  '700vh',       
 
-  // URL param override: ?src=./myframes/
   get resolvedPath() {
     const params = new URLSearchParams(window.location.search);
     return params.get('src') || this.framePath;
   },
 };
+
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isMobile = isIOS || /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // While the portfolio sections are on screen, advance frames ONLY when the user scrolls.
 // Frame numbers here match the *file* numbering (002–074).
@@ -124,10 +128,20 @@ function frameSrc(index) {
 
 /** Resize canvas to match viewport exactly */
 function resizeCanvas() {
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width  = window.innerWidth * dpr;
-  canvas.height = window.innerHeight * dpr;
-  drawFrame(currentFrameFloat);  // redraw using exact blended frame after resize
+  // Use visualViewport for more accurate mobile dimensions if available
+  const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  
+  // iOS has severe canvas memory limits. Keep resolution sane.
+  const dpr = isIOS ? Math.min(window.devicePixelRatio, 1.5) : (window.devicePixelRatio || 1);
+  
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  
+  drawFrame(currentFrameFloat);
 }
 
 /* ──────────────────────────────────────────
@@ -143,41 +157,72 @@ function drawFrame(floatIdx) {
   const img1 = frames[idx1];
   const img2 = frames[idx2];
 
-  if (!img1 || !img1.complete || img1.naturalWidth === 0) return;
+  // If frames aren't in memory, request them (lazy load on scroll)
+  if (!img1 || !img1.complete) {
+    if (!img1) requestFrame(idx1);
+    return;
+  }
 
   const cw = canvas.width;
   const ch = canvas.height;
   const iw = img1.naturalWidth;
   const ih = img1.naturalHeight;
 
-  ctx.clearRect(0, 0, cw, ch);
+  if (iw === 0 || ih === 0) return;
 
-  // ── Layer 1: solid background to hide letterbox bars ──
+  ctx.clearRect(0, 0, cw, ch);
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, cw, ch);
 
-  // Ensure high-quality rendering
   ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  ctx.imageSmoothingQuality = isMobile ? 'low' : 'high';
 
-  // ── Layer 2: crisp contain (full image, centred on top) ──
   const containScale = Math.min(cw / iw, ch / ih);
   const fw = iw * containScale;
   const fh = ih * containScale;
   const fx = (cw - fw) / 2;
   const fy = (ch - fh) / 2;
 
-  // Base frame
   ctx.globalAlpha = 1;
   ctx.drawImage(img1, fx, fy, fw, fh);
 
-  // Blend the next frame on top to create perfect optical smoothness
-  if (blend > 0.001 && img2 && img2.complete && img2.naturalWidth > 0) {
+  if (blend > 0.01 && img2 && img2.complete && img2.naturalWidth > 0) {
     ctx.globalAlpha = blend;
     ctx.drawImage(img2, fx, fy, fw, fh);
   }
   
-  ctx.globalAlpha = 1; // restore opacity
+  ctx.globalAlpha = 1;
+
+  // iOS MEMORY MANAGEMENT: If we have too many frames, purge those far away
+  if (isIOS && loadedCount > CONFIG.maxMemoryFrames) {
+    purgeDistantFrames(idx1);
+  }
+}
+
+/** Purge frames from memory that are far from the current index */
+function purgeDistantFrames(currentIdx) {
+  const buffer = 15; // keep 15 frames on either side
+  for (let i = 0; i < frames.length; i++) {
+    if (frames[i] && (i < currentIdx - buffer || i > currentIdx + buffer)) {
+      frames[i].src = ''; // Clear src to help GC
+      frames[i] = null;
+      loadedCount--;
+    }
+  }
+}
+
+/** Request a single frame if missing (used during scroll) */
+function requestFrame(idx) {
+  if (frames[idx]) return;
+  const img = new Image();
+  img.decoding = 'async';
+  img.onload = () => {
+    frames[idx] = img;
+    loadedCount++;
+    // Draw if this is still the frame we want
+    if (Math.floor(currentFrameFloat) === idx) drawFrame(currentFrameFloat);
+  };
+  img.src = frameSrc(idx);
 }
 
 /* ──────────────────────────────────────────
@@ -539,23 +584,40 @@ function loadBatch(startIdx, batchSize) {
     let done   = 0;
     const count = end - startIdx;
 
-    if (count === 0) { resolve(); return; }
+    if (count <= 0) { resolve(); return; }
 
     for (let i = startIdx; i < end; i++) {
+      // If image already exists/loading, don't re-create
+      if (frames[i]) {
+        done++;
+        if (done === count) resolve();
+        continue;
+      }
+
       const img = new Image();
       img.decoding = 'async';
 
-      img.onload = img.onerror = () => {
+      img.onload = async () => {
+        try {
+          // ensure decode before counting as loaded for smoother painting
+          if (img.decode) await img.decode();
+        } catch (e) {}
+
         loadedCount++;
         done++;
         updateLoadingUI(loadedCount, CONFIG.totalFrames);
 
         // Draw first frame as soon as it's ready
-        if (i === 0 && img.complete) {
-          frames[0] = img;
+        if (i === 0) {
           drawFrame(0);
         }
 
+        if (done === count) resolve();
+      };
+
+      img.onerror = () => {
+        console.warn(`Failed to load frame ${i}`);
+        done++;
         if (done === count) resolve();
       };
 
@@ -565,42 +627,62 @@ function loadBatch(startIdx, batchSize) {
   });
 }
 
+/** 
+ * Background preloader that won't block the UI 
+ * Uses requestIdleCallback where available
+ */
+function preloadRemainingFrames(startIndex) {
+  const loadNext = async () => {
+    if (startIndex >= CONFIG.totalFrames) return;
+    
+    await loadBatch(startIndex, CONFIG.batchSize);
+    
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(() => preloadRemainingFrames(startIndex + CONFIG.batchSize));
+    } else {
+      setTimeout(() => preloadRemainingFrames(startIndex + CONFIG.batchSize), 100);
+    }
+  };
+  loadNext();
+}
+
 async function preloadAllFrames() {
   totalCountEl.textContent = CONFIG.totalFrames;
   updateLoadingUI(0, CONFIG.totalFrames);
 
   loaderStartTime = performance.now();
 
-  // Load everything once, then allow entry.
-  // This avoids a "second loading" phase when the user clicks View Portfolio.
-  for (let start = 0; start < CONFIG.totalFrames; start += CONFIG.batchSize) {
-    await loadBatch(start, CONFIG.batchSize);
-  }
+  // 1. Load the PRIORITY batch first (intro frames)
+  // This allows the user to see the starting frame and enter quickly.
+  await loadBatch(0, CONFIG.priorityFrames);
 
+  // Mark priority as done and allow entry
   allLoaded = true;
   if (resolveAllFramesLoaded) resolveAllFramesLoaded();
 
-  // Keep loader up briefly so the loading FX is visible (dramatic).
+  // Hide loader early once priority frames are in
   const elapsed = performance.now() - loaderStartTime;
-  if (elapsed < LOADER_MIN_MS) {
-    await new Promise((r) => setTimeout(r, LOADER_MIN_MS - elapsed));
-  }
+  const wait = Math.max(0, LOADER_MIN_MS - elapsed);
+  
+  setTimeout(() => {
+    loadingScreen.classList.add('hidden');
+    if (viewPortfolioOverlay) viewPortfolioOverlay.classList.remove('hidden');
+    
+    // 2. Start loading the rest in the background
+    preloadRemainingFrames(CONFIG.priorityFrames);
+    
+    // Stop the loader video and audio once they are not visible.
+    if (loaderVideo) {
+      loaderVideo.pause();
+      loaderVideo.currentTime = 0;
+    }
+    if (loaderAudio) {
+      loaderAudio.pause();
+      loaderAudio.currentTime = 0;
+    }
+  }, wait);
 
-  // Hide loader and reveal the entry button.
-  loadingScreen.classList.add('hidden');
-  if (viewPortfolioOverlay) viewPortfolioOverlay.classList.remove('hidden');
-
-  // Stop the loader video and audio once they are not visible.
-  if (loaderVideo) {
-    loaderVideo.pause();
-    loaderVideo.currentTime = 0;
-  }
-  if (loaderAudio) {
-    loaderAudio.pause();
-    loaderAudio.currentTime = 0;
-  }
-
-  // Draw the first frame and initial overlay text.
+  // Initial draw
   drawFrame(0);
   updateSceneOverlay(0);
 }
@@ -639,6 +721,8 @@ function init() {
   if (viewPortfolioBtn) {
     const handleStart = (e) => {
       e.preventDefault();
+      // iOS MUST have audio/video play triggered by a click
+      if (loaderAudio) loaderAudio.play().catch(() => {});
       startAutoplayToPortfolio();
     };
     viewPortfolioBtn.addEventListener('click', handleStart);
